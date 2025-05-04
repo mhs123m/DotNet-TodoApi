@@ -1,0 +1,24 @@
+
+services:
+  todoapi:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - ConnectionStrings__DefaultConnection=server=db;port=3306;user=root;password=secret;database=todo_db
+
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: todo_db
+    volumes:
+      - db-data:/var/lib/mysql
+    ports:
+      - 3306:3306
+
+volumes:
+  db-data:
