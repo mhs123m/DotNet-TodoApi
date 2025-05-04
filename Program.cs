@@ -21,17 +21,13 @@ builder.Services.AddOpenApiDocument(config =>
 var app = builder.Build();
 app.UseOpenApi();
 
-if (app.Environment.IsDevelopment()){
-    app.UseSwaggerUi(config =>
-    {
-        config.DocumentTitle = "TodoAPI";
-        config.Path = "/swagger";
-        config.DocumentPath = "/swagger/{documentName}/swagger.json";
-        config.DocExpansion = "list";
-    });
-}
-
-app.UseHttpsRedirection();
+app.UseSwaggerUi(config =>
+{
+    config.DocumentTitle = "TodoAPI";
+    config.Path = "/swagger";
+    config.DocumentPath = "/swagger/{documentName}/swagger.json";
+    config.DocExpansion = "list";
+});
 
 app.UseAuthorization();
 
