@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using TodoApi.Models;
+using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
+using Application;
+using Infrastructure.Persistence;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +11,7 @@ builder.Services.AddDbContext<TodoContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 builder.Services.AddControllers();
+builder.Services.AddApplication();
 builder.Services.AddAuthorization();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddEndpointsApiExplorer();
