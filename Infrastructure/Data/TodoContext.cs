@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using Domain.Entities;
 
 namespace Infrastructure.Persistence;
+
 
 public class TodoContext : DbContext
 {
