@@ -1,7 +1,9 @@
 
 services:
   todoapi:
-    build: .
+    build: 
+      context: ../
+      dockerfile: API/Dockerfile
     ports:
       - "8080:8080"
     depends_on:
