@@ -25,8 +25,8 @@ A simple ASP.NET Core Web API for managing todo items, using Entity Framework Co
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name/API
+git clone https://github.com/mhs123m/DotNet-TodoApi.git
+cd DotNet-TodoApi/API 
 ```
 
 > The `docker-compose.yml` and `Dockerfile` are located inside the `API` folder.
