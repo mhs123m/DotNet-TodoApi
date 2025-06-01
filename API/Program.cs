@@ -1,13 +1,21 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 using Infrastructure.Persistence;
-
+using MediatR;
+using Application;
+using Application.Interfaces;
+using Application.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<TodoContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+builder.Services.AddMediatR(typeof(Program).Assembly);
+builder.Services.AddMediatR(typeof(AssemblyReference).Assembly);
+builder.Services.AddScoped<ITodoRepository, TodoRepository>();
+
 
 builder.Services.AddControllers();
 builder.Services.AddAuthorization();

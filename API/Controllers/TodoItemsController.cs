@@ -7,6 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.Persistence;
 using Domain.Entities;
+using MediatR;
+using Application.Features.Todos.Queries.GetAllTodosQuery;
+using Application.Features.Todos.Queries.GetTodoByIdQuery;
+using Application.Features.Todos.Commands.CreateTodoCommand;
+using Application.Dto;
+using Application.Features.Todos.Commands.UpdateTodoCommand;
 
 namespace TodoApi.Controllers
 {
@@ -14,95 +20,91 @@ namespace TodoApi.Controllers
     [ApiController]
     public class TodoItemsController : ControllerBase
     {
-        private readonly TodoContext _context;
+        private readonly IMediator _mediator;
 
-        public TodoItemsController(TodoContext context)
+        public TodoItemsController(IMediator mediator)
         {
-            _context = context;
+            _mediator = mediator;
         }
 
         // GET: api/TodoItems
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
+        public async Task<ActionResult<TodoItem>> GetAllTodoItems()
         {
-            return await _context.TodoItems.ToListAsync();
+            var todos = await _mediator.Send(new GetAllTodosQuery());
+            return Ok(todos);
         }
 
         // GET: api/TodoItems/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<TodoItem>> GetTodoItem(long id)
+        public async Task<ActionResult<TodoItem>> GetTodoItemById(long id)
         {
-            var todoItem = await _context.TodoItems.FindAsync(id);
-
-            if (todoItem == null)
-            {
+            var todo = await _mediator.Send(new GetTodoItemById() {Id = id});
+            if (todo == null){
                 return NotFound();
             }
-
-            return todoItem;
+            return Ok(todo);
         }
 
-        // PUT: api/TodoItems/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItem(long id, TodoItem todoItem)
+
+        //         // PUT: api/TodoItems/5
+        //         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("[action]")]
+        public async Task<ActionResult<TodoItem>> PutTodoItem(long id, UpdateTodoCommand command)
         {
-            if (id != todoItem.Id)
+            if (command == null)
             {
                 return BadRequest();
             }
-
-            _context.Entry(todoItem).State = EntityState.Modified;
-
-            try
+            var todo = await _mediator.Send(command);
+            var dict = new Dictionary<string, bool>
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!TodoItemExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+                {"status", todo}
+            };
+            return Ok(dict);
 
-            return NoContent();
         }
 
         // POST: api/TodoItems
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
+        public async Task<ActionResult<TodoDto>> CreateTodoItem(CreateTodoCommand command)
         {
-            _context.TodoItems.Add(todoItem);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetTodoItem), new { id = todoItem.Id }, todoItem);
-        }
-
-        // DELETE: api/TodoItems/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTodoItem(long id)
-        {
-            var todoItem = await _context.TodoItems.FindAsync(id);
-            if (todoItem == null)
-            {
-                return NotFound();
+            if (command == null){
+                return BadRequest();
             }
 
-            _context.TodoItems.Remove(todoItem);
-            await _context.SaveChangesAsync();
+            var todo = await _mediator.Send(command);
 
-            return NoContent();
-        }
+            var dict = new Dictionary<string, bool>
+            {
+                { "status", todo }
+            };
 
-        private bool TodoItemExists(long id)
-        {
-            return _context.TodoItems.Any(e => e.Id == id);
+            return Ok(dict);
+
+
+
         }
+//         // DELETE: api/TodoItems/5
+//         [HttpDelete("{id}")]
+//         public async Task<IActionResult> DeleteTodoItem(long id)
+//         {
+//             var todoItem = await _context.TodoItems.FindAsync(id);
+//             if (todoItem == null)
+//             {
+//                 return NotFound();
+//             }
+
+//             _context.TodoItems.Remove(todoItem);
+//             await _context.SaveChangesAsync();
+
+//             return NoContent();
+//         }
+
+//         private bool TodoItemExists(long id)
+//         {
+//             return _context.TodoItems.Any(e => e.Id == id);
+//         }
     }
 }

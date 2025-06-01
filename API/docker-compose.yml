@@ -1,15 +1,5 @@
 
 services:
-  todoapi:
-    build: 
-      context: ../
-      dockerfile: API/Dockerfile
-    ports:
-      - "8080:8080"
-    depends_on:
-      - db
-    environment:
-      - ConnectionStrings__DefaultConnection=server=db;port=3306;user=root;password=secret;database=todo_db
 
   db:
     image: mysql:8.0
@@ -21,6 +11,17 @@ services:
       - db-data:/var/lib/mysql
     ports:
       - 3306:3306
+
+  todoapi:
+    build: 
+      context: ../
+      dockerfile: API/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - ConnectionStrings__DefaultConnection=server=db;port=3306;user=root;password=secret;database=todo_db
 
 volumes:
   db-data:
